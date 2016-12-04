@@ -25,15 +25,7 @@ class MetricSet extends Observable {
 
     this.parent.on('update', () => {
       // Update the metrics listing table
-      $('#metric-table').html(templates.metric_table_template({
-        data: this.parent.names.map(name => {
-          return {
-            name: name,
-            value: this.parent.value(name),
-            selected: Data.selected.has(name)
-          }
-        })
-      }))
+      this.render()
 
       // Capture datapoints for any selected metrics
       for (let name of this.metrics) {
@@ -42,6 +34,20 @@ class MetricSet extends Observable {
 
       this.fire('update', this)
     })
+
+    this.on('update', () => { this.render() } )
+  }
+
+  render() {
+    $('#metric-table').html(templates.metric_table_template({
+      data: this.parent.names.map(name => {
+        return {
+          name: name,
+          value: this.parent.value(name),
+          selected: Data.selected.has(name)
+        }
+      })
+    }))
   }
 
   add(metric) {
@@ -49,19 +55,24 @@ class MetricSet extends Observable {
       this.metrics.add(metric)
       this.store_point(metric)
       this.fire('add', metric)
+      this.fire('update')
     }
   }
 
   remove(metric) {
     if (this.has(metric)) {
       this.metrics.delete(metric)
+      delete this.data[metric]
       this.fire('remove', metric)
+      this.fire('update')
     }
   }
 
   clear() {
     this.metrics.clear()
+    this.data = {}
     this.fire('clear')
+    this.fire('update')
   }
 
   has(metric) {
@@ -141,7 +152,6 @@ function compile_template(selector) {
 }
 
 function toggle_metric(name) {
-  console.log('Toggle-metric ' + name)
   let set = Data.selected
   if (set.has(name)) {
     set.remove(name)
@@ -161,12 +171,7 @@ function init() {
 
   Plotly.newPlot('chart', Data.selected.plotly_data())
   Data.plot = $('#chart')[0]
-
   Data.selected.on('update', redraw)
-  Data.selected.on('add', redraw)
-  Data.selected.on('remove', redraw)
-  Data.selected.on('clear', redraw)
-
   Data.metrics.start()
 }
 
@@ -176,5 +181,8 @@ $(document).ready(() => {
   $(document).on('click', 'tr.metric-row td.name', (el) => {
     let metric = el.target.textContent
     toggle_metric(metric)
+  })
+  $(document).on('click', '#clear-button', (el) => {
+    Data.selected.clear()
   })
 })
