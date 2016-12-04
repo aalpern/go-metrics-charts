@@ -30,3 +30,5 @@ import "github.com/rcrowley/go-metrics/exp"
 
 exp.Exp(metrics.DefaultRegistry)
 ```
+
+The live charts page will be registered at `/debug/metrics/charts`.
