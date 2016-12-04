@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta charset="utf-8" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.2.3/css/bulma.min.css" rel="stylesheet"></link>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.15.3/axios.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bean/1.0.15/bean.min.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </head>
+
+
+    <body>
+        <div class="hero is-light">
+            <div class="hero-body">
+                <div class="container is-fluid">
+                    <!-- Chart Area -->
+                    <div class="box">
+                        <div id="chart">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container"
+            <!-- Chart Controls -->
+            <nav class="level">
+                <div class="level-left">
+                    <div class="level-item">
+                        <p class="control has-addons">
+                            <input class="input" type="text" placeholder="Filter metrics...">
+                        </p>
+                    </div>
+                </div>
+                <div class="level-right">
+                    <p class="level-item"><a class="button">Export</a></p>
+                    <p class="level-item"><a class="button is-danger">Clear</a></p>
+                </div>
+            </nav>
+            <!-- Metrics List -->
+            <div id="metrics">
+                <div class="columns">
+                    <div class="column">
+                        <div class="box">
+                            <div id="metric-table"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="main.js"></script>
+        <style>
+         #chart {
+             width: 100%;
+             height: 500px;
+         }
+         tr.metric-row.is-selected td {
+             font-weight: bold;
+         }
+        </style>
+    </body>
+
+    <!-- Templates -->
+    <script id="metric-table-template" type="text/x-handlebars-template">
+        <table class="table is-striped">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Current Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each data}}
+                <tr class="metric-row {{#if selected}}is-selected{{/if}}">
+                    <td class="name">{{name}}</td>
+                    <td class="value">{{value}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Metric</th>
+                    <th>Current Value</th>
+                </tr>
+            </tfoot>
+        </table>
+    </script>
+
+</html>
