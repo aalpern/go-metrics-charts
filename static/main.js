@@ -53,6 +53,14 @@ class MetricSet extends Observable {
     }
   }
 
+  toggle(metric) {
+    if (this.has(metric)) {
+      this.remove(metric)
+    } else {
+      this.add(metric)
+    }
+  }
+
   clear() {
     this.metrics.clear()
     this.data = {}
@@ -204,6 +212,10 @@ function plot() {
   plot_fn()
 }
 
+/* ----------------------------------------------------------------------
+   URL Handling
+   ---------------------------------------------------------------------- */
+
 function set_url() {
   let u = new URI()
   u.removeQuery('metric')
@@ -233,22 +245,13 @@ function parse_url() {
   }
 }
 
-function compile_template(selector) {
-  return Handlebars.compile($(selector).html())
-}
-
-function toggle_metric(name) {
-  let set = Data.selected
-  if (set.has(name)) {
-    set.remove(name)
-  } else {
-    set.add(name)
-  }
-}
+/* ----------------------------------------------------------------------
+   Setup & Event Handlers
+   ---------------------------------------------------------------------- */
 
 function init() {
   templates = {
-    metric_table_template: compile_template('#metric-table-template')
+    metric_table_template: Handlebars.compile($('#metric-table-template').html())
   }
   Data = {
     options: {
@@ -257,31 +260,35 @@ function init() {
         modeBarButtonsToRemove: ['toImage', 'sendDataToCloud'],
         displaylogo: false
       }
-    }
+    },
+    metrics: new Metrics()
   }
-  Data.metrics = new Metrics()
   Data.selected = new MetricSet(Data.metrics)
-  Data.metrics.update()
-
-  plot()
-
   Data.selected.on('update', plot)
   Data.selected.on('update', set_url)
+  Data.metrics.update()
   Data.metrics.start()
 }
 
 $(document).ready(() => {
   init()
 
+  // Toggle metrics when clicking on them in the metrics table
   $(document).on('click', 'tr.metric-row td.name', (e) => {
-    toggle_metric(e.target.textContent)
+    Data.selected.toggle(e.target.textContent)
   })
+
+  // Set the filter on input to the text box
   $(document).on('input', '#filter', (e) => {
     Data.metrics.setFilter(e.currentTarget.value)
   })
+
+  // Button handlers
+
   $(document).on('click', '#btn-clear', (e) => {
     Data.selected.clear()
   })
+
   $(document).on('click', '#btn-pause', (e) => {
     let icon = $('#btn-pause i')
     if (Data.metrics.is_running()) {
@@ -294,6 +301,7 @@ $(document).ready(() => {
       icon.addClass('fa-pause')
     }
   })
+
   $(document).on('click', '#btn-line-chart', (e) => {
     $('.chart-button').removeClass('is-active')
     $('#btn-line-chart').addClass('is-active')
@@ -312,6 +320,8 @@ $(document).ready(() => {
     plot_fn = plot_bar_chart
     plot()
   })
+
+  // Redraw the plot on window resize
   $(window).resize(plot)
 
   parse_url()

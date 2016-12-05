@@ -52,5 +52,6 @@ The live charts page will be registered at `/debug/metrics/charts`.
 * [x] Responsive chart
 * [x] pause/restart
 * [ ] better handling of long list of metrics
+* [ ] merged runtime stats into metrics list for unified UI
 * [x] implement filtering of metrics list
 * [x] URL handling/generation
