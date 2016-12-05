@@ -4,6 +4,7 @@
         <title></title>
         <meta charset="utf-8" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.2.3/css/bulma.min.css" rel="stylesheet"></link>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.15.3/axios.min.js"></script>
@@ -39,8 +40,38 @@
                     </div>
                 </div>
                 <div class="level-right">
-                    <p class="level-item"><a id="export" class="button">Export</a></p>
-                    <p class="level-item"><a id="clear" class="button is-danger">Clear</a></p>
+                    <div class="level-item">
+                        <p class="control has-addons">
+                            <a class="button chart-button is-active" id="btn-line-chart">
+                                <span class="icon is-small">
+                                    <i class="fa fa-line-chart"></i>
+                                </span>
+                            </a>
+                            <a class="button chart-button" id="btn-area-chart">
+                                <span class="icon is-small">
+                                    <i class="fa fa-area-chart"></i>
+                                </span>
+                            </a>
+                            <a class="button chart-button" id="btn-bar-chart">
+                                <span class="icon is-small">
+                                    <i class="fa fa-bar-chart"></i>
+                                </span>
+                            </a>
+                        </p>
+                    </div>
+                    <div class="level-item">
+                        <p class="control">
+                            <a class="button" id="btn-pause">
+                                <span class="icon is-small">
+                                    <i class="fa fa-pause"></i>
+                                </span>
+                            </a>
+                            <a id="btn-export" class="button">
+                                <span>Export</span>
+                            </a>
+                            <a id="btn-clear" class="button is-danger">Clear</a>
+                        </p>
+                    </div>
                 </div>
             </nav>
             <!-- Metrics List -->

@@ -79,7 +79,7 @@ class MetricSet extends Observable {
       return {
         x: raw.map(point => point.timestamp),
         y: raw.map(point => point.value),
-        mode: 'lines',
+        type: 'scatter',
         name: name
       }
     })
@@ -125,7 +125,12 @@ class Metrics extends Observable {
   stop() {
     if (this.interval) {
       window.clearInterval(this.interval)
+      this.interval = null
     }
+  }
+
+  is_running() {
+    return Boolean(this.interval)
   }
 
   setFilter(filter) {
@@ -158,14 +163,45 @@ class Metrics extends Observable {
   }
 }
 
-function redraw() {
-  Data.plot.data = Data.selected.plotly_data()
-  Plotly.redraw(Data.plot)
+/* ----------------------------------------------------------------------
+   Plotting
+   ---------------------------------------------------------------------- */
+
+function plot_line_chart() {
+  let data = Data.selected.plotly_data()
+  Plotly.newPlot('chart', data, {}, Data.options.plotly)
+  Data.plot = $('#chart')[0]
 }
 
-function plot() {
-  Plotly.newPlot('chart', Data.selected.plotly_data())
+function plot_area_chart() {
+  let stackedArea = function(traces) {
+    traces[0].fill = 'tozeroy'
+	for(var i=1; i<traces.length; i++) {
+      traces[i].fill = 'tonexty'
+	  for(var j=0; j<(Math.min(traces[i]['y'].length, traces[i-1]['y'].length)); j++) {
+		traces[i]['y'][j] += traces[i-1]['y'][j];
+	  }
+	}
+	return traces;
+  }
+  let data = stackedArea(Data.selected.plotly_data())
+  Plotly.newPlot('chart', data, {}, Data.options.plotly)
   Data.plot = $('#chart')[0]
+}
+
+function plot_bar_chart() {
+  let data = Data.selected.plotly_data()
+  for (let series of data) {
+    series.type = 'bar'
+  }
+  Plotly.newPlot('chart', data, {}, Data.options.plotly)
+  Data.plot = $('#chart')[0]
+}
+
+var plot_fn = plot_line_chart
+
+function plot() {
+  plot_fn()
 }
 
 function set_url() {
@@ -214,14 +250,22 @@ function init() {
   templates = {
     metric_table_template: compile_template('#metric-table-template')
   }
-  Data = {}
+  Data = {
+    options: {
+      plotly: {
+        showLink: false,
+        modeBarButtonsToRemove: ['toImage', 'sendDataToCloud'],
+        displaylogo: false
+      }
+    }
+  }
   Data.metrics = new Metrics()
   Data.selected = new MetricSet(Data.metrics)
   Data.metrics.update()
 
   plot()
 
-  Data.selected.on('update', redraw)
+  Data.selected.on('update', plot)
   Data.selected.on('update', set_url)
   Data.metrics.start()
 }
@@ -229,14 +273,44 @@ function init() {
 $(document).ready(() => {
   init()
 
-  $(document).on('click', 'tr.metric-row td.name', (el) => {
-    toggle_metric(el.target.textContent)
+  $(document).on('click', 'tr.metric-row td.name', (e) => {
+    toggle_metric(e.target.textContent)
   })
-  $(document).on('click', '#clear', (el) => {
+  $(document).on('input', '#filter', (e) => {
+    Data.metrics.setFilter(e.currentTarget.value)
+  })
+  $(document).on('click', '#btn-clear', (e) => {
     Data.selected.clear()
   })
-  $(document).on('input', '#filter', (el) => {
-    Data.metrics.setFilter(el.currentTarget.value)
+  $(document).on('click', '#btn-pause', (e) => {
+    let icon = $('#btn-pause i')
+    if (Data.metrics.is_running()) {
+      Data.metrics.stop()
+      icon.removeClass('fa-pause')
+      icon.addClass('fa-play')
+    } else {
+      Data.metrics.start()
+      icon.removeClass('fa-play')
+      icon.addClass('fa-pause')
+    }
+  })
+  $(document).on('click', '#btn-line-chart', (e) => {
+    $('.chart-button').removeClass('is-active')
+    $('#btn-line-chart').addClass('is-active')
+    plot_fn = plot_line_chart
+    plot()
+  })
+  $(document).on('click', '#btn-area-chart', (e) => {
+    $('.chart-button').removeClass('is-active')
+    $('#btn-area-chart').addClass('is-active')
+    plot_fn = plot_area_chart
+    plot()
+  })
+  $(document).on('click', '#btn-bar-chart', (e) => {
+    $('.chart-button').removeClass('is-active')
+    $('#btn-bar-chart').addClass('is-active')
+    plot_fn = plot_bar_chart
+    plot()
   })
   $(window).resize(plot)
 
