@@ -131,16 +131,18 @@ class Metrics extends Observable {
   setFilter(filter) {
     this.filter = filter
     this.render()
+    set_url()
   }
 
   render() {
+    let re = new RegExp(this.filter || '.*')
     let metrics = this.names.map(name => {
         return {
           name: name,
           value: this.value(name),
           selected: Data.selected.has(name)
         }
-      }).filter(metric => !this.filter || metric.name.includes(this.filter))
+      }).filter(metric => re.exec(metric.name))
 
     $('#metrics-count').text(this.names.length)
     $('#filtered-count').text(metrics.length)
@@ -150,7 +152,7 @@ class Metrics extends Observable {
     }))
 
     let input = $('#filter')
-    if (input.text() != this.filter) {
+    if (input.val() != this.filter) {
       input.val(this.filter)
     }
   }
