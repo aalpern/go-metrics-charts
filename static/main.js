@@ -156,6 +156,28 @@ function redraw() {
     Plotly.redraw(Data.plot)
 }
 
+function set_url() {
+  let u = new URI()
+  u.removeQuery('metric')
+  if (Data.selected.metrics.size > 0) {
+    u.addQuery('metric', Array.from(Data.selected.metrics.values()))
+  }
+  history.pushState({}, '', u.toString())
+}
+
+function parse_url() {
+  let q = new URI().query(true)
+  if (q.metric) {
+    if (typeof(q.metric) == 'string') {
+      Data.selected.add(q.metric)
+    } else {
+      for (let metric of q.metric) {
+        Data.selected.add(metric)
+      }
+    }
+  }
+}
+
 function compile_template(selector) {
   return Handlebars.compile($(selector).html())
 }
@@ -181,6 +203,7 @@ function init() {
   Plotly.newPlot('chart', Data.selected.plotly_data())
   Data.plot = $('#chart')[0]
   Data.selected.on('update', redraw)
+  Data.selected.on('update', set_url)
   Data.metrics.start()
 }
 
@@ -196,4 +219,6 @@ $(document).ready(() => {
   $(document).on('input', '#filter', (el) => {
     Data.metrics.setFilter(el.currentTarget.value)
   })
+
+  parse_url()
 })

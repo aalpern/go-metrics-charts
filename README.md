@@ -14,6 +14,12 @@ without the need for an entire metrics stack - it can be useful when
 developing and testing locally. All third party dependencies are
 loaded from a CDN to keep the amount of embedded data to a minimum.
 
+## Browser Compatibility
+
+The javascript code is written in ES6, so it requires a
+[modern browser](http://kangax.github.io/compat-table/es6/). It's been
+tested in Safari 10 and Chrome 54.
+
 ## Installation
 
 `go get github.com/aalpern/go-metrics-charts`
@@ -44,4 +50,4 @@ The live charts page will be registered at `/debug/metrics/charts`.
 * [ ] pause/restart and change polling interval
 * [ ] better handling of long list of metrics
 * [x] implement filtering of metrics list
-* [ ] URL handling/generation
+* [x] URL handling/generation
