@@ -148,19 +148,33 @@ class Metrics extends Observable {
     $('#metric-table').html(templates.metric_table_template({
       data: metrics
     }))
+
+    let input = $('#filter')
+    if (input.text() != this.filter) {
+      input.val(this.filter)
+    }
   }
 }
 
 function redraw() {
-    Data.plot.data = Data.selected.plotly_data()
-    Plotly.redraw(Data.plot)
+  Data.plot.data = Data.selected.plotly_data()
+  Plotly.redraw(Data.plot)
+}
+
+function plot() {
+  Plotly.newPlot('chart', Data.selected.plotly_data())
+  Data.plot = $('#chart')[0]
 }
 
 function set_url() {
   let u = new URI()
   u.removeQuery('metric')
+  u.removeQuery('filter')
   if (Data.selected.metrics.size > 0) {
     u.addQuery('metric', Array.from(Data.selected.metrics.values()))
+  }
+  if (Data.metrics.filter) {
+    u.addQuery('filter', Data.metrics.filter)
   }
   history.pushState({}, '', u.toString())
 }
@@ -175,6 +189,9 @@ function parse_url() {
         Data.selected.add(metric)
       }
     }
+  }
+  if (q.filter) {
+    Data.metrics.setFilter(q.filter)
   }
 }
 
@@ -200,8 +217,8 @@ function init() {
   Data.selected = new MetricSet(Data.metrics)
   Data.metrics.update()
 
-  Plotly.newPlot('chart', Data.selected.plotly_data())
-  Data.plot = $('#chart')[0]
+  plot()
+
   Data.selected.on('update', redraw)
   Data.selected.on('update', set_url)
   Data.metrics.start()
@@ -219,6 +236,7 @@ $(document).ready(() => {
   $(document).on('input', '#filter', (el) => {
     Data.metrics.setFilter(el.currentTarget.value)
   })
+  $(window).resize(plot)
 
   parse_url()
 })
