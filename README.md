@@ -43,4 +43,5 @@ The live charts page will be registered at `/debug/metrics/charts`.
 * [ ] Chart options - add stacked area, display data points
 * [ ] pause/restart and change polling interval
 * [ ] better handling of long list of metrics
-* [ ] implement filtering of metrics list
+* [x] implement filtering of metrics list
+* [ ] URL handling/generation

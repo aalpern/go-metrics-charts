@@ -24,9 +24,6 @@ class MetricSet extends Observable {
     this.data = {}
 
     this.parent.on('update', () => {
-      // Update the metrics listing table
-      this.render()
-
       // Capture datapoints for any selected metrics
       for (let name of this.metrics) {
         this.store_point(name)
@@ -35,19 +32,7 @@ class MetricSet extends Observable {
       this.fire('update', this)
     })
 
-    this.on('update', () => { this.render() } )
-  }
-
-  render() {
-    $('#metric-table').html(templates.metric_table_template({
-      data: this.parent.names.map(name => {
-        return {
-          name: name,
-          value: this.parent.value(name),
-          selected: Data.selected.has(name)
-        }
-      })
-    }))
+    this.on('update', () => { this.parent.render() } )
   }
 
   add(metric) {
@@ -112,6 +97,7 @@ class Metrics extends Observable {
     this.names = []
     this.timestamp = null
     this.period = 5000
+    this.filter = null
   }
 
   value(metric) {
@@ -126,6 +112,7 @@ class Metrics extends Observable {
         this.timestamp = new Date()
       })
       .then(() => {
+        this.render()
         this.fire('update', this)
       })
   }
@@ -139,6 +126,28 @@ class Metrics extends Observable {
     if (this.interval) {
       window.clearInterval(this.interval)
     }
+  }
+
+  setFilter(filter) {
+    this.filter = filter
+    this.render()
+  }
+
+  render() {
+    let metrics = this.names.map(name => {
+        return {
+          name: name,
+          value: this.value(name),
+          selected: Data.selected.has(name)
+        }
+      }).filter(metric => !this.filter || metric.name.includes(this.filter))
+
+    $('#metrics-count').text(this.names.length)
+    $('#filtered-count').text(metrics.length)
+
+    $('#metric-table').html(templates.metric_table_template({
+      data: metrics
+    }))
   }
 }
 
@@ -179,10 +188,12 @@ $(document).ready(() => {
   init()
 
   $(document).on('click', 'tr.metric-row td.name', (el) => {
-    let metric = el.target.textContent
-    toggle_metric(metric)
+    toggle_metric(el.target.textContent)
   })
-  $(document).on('click', '#clear-button', (el) => {
+  $(document).on('click', '#clear', (el) => {
     Data.selected.clear()
+  })
+  $(document).on('input', '#filter', (el) => {
+    Data.metrics.setFilter(el.currentTarget.value)
   })
 })
