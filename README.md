@@ -44,6 +44,8 @@ exp.Exp(metrics.DefaultRegistry)
 
 The live charts page will be registered at `/debug/metrics/charts`.
 
+![screenshot](screenshot.png)
+
 ## TO-DO
 
 * [ ] Chart options - add stacked area, display data points
