@@ -116,8 +116,15 @@ class Metrics extends Observable {
     axios.get('/debug/metrics')
       .then((rsp) => {
         this.metrics = rsp.data.metrics
-        this.names = Object.keys(this.metrics)
         this.timestamp = new Date()
+        for (let stat of Object.keys(rsp.data.memstats)) {
+          let value = rsp.data.memstats[stat]
+          if (typeof(value) == 'number') {
+            let name = 'go.memstats.' + stat
+            this.metrics[name] = value
+          }
+        }
+        this.names = Object.keys(this.metrics)
       })
       .then(() => {
         this.render()
@@ -184,12 +191,14 @@ function plot_line_chart() {
 function plot_area_chart() {
   let stackedArea = function(traces) {
     traces[0].fill = 'tozeroy'
+    traces.forEach(series => {series.y.reverse(); series.x.reverse() })
 	for(var i=1; i<traces.length; i++) {
       traces[i].fill = 'tonexty'
 	  for(var j=0; j<(Math.min(traces[i]['y'].length, traces[i-1]['y'].length)); j++) {
 		traces[i]['y'][j] += traces[i-1]['y'][j];
 	  }
 	}
+    traces.forEach(series => {series.y.reverse(); series.x.reverse() })
 	return traces;
   }
   let data = stackedArea(Data.selected.plotly_data())
