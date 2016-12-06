@@ -144,6 +144,14 @@ class Metrics extends Observable {
     }
   }
 
+  set_period(period) {
+    this.period = period
+    if (this.is_running()) {
+      this.stop()
+      this.start()
+    }
+  }
+
   is_running() {
     return Boolean(this.interval)
   }
@@ -171,7 +179,7 @@ class Metrics extends Observable {
       data: metrics
     }))
 
-    let input = $('#filter')
+    let input = $('#input-filter')
     if (input.val() != this.filter) {
       input.val(this.filter)
     }
@@ -288,8 +296,13 @@ $(document).ready(() => {
   })
 
   // Set the filter on input to the text box
-  $(document).on('input', '#filter', (e) => {
+  $(document).on('input', '#input-filter', (e) => {
     Data.metrics.setFilter(e.currentTarget.value)
+  })
+
+  // Set the refresh period
+  $(document).on('input', '#input-period', (e) => {
+    Data.metrics.set_period(e.currentTarget.value * 1000)
   })
 
   // Button handlers
@@ -311,6 +324,10 @@ $(document).ready(() => {
     }
   })
 
+  $(document).on('click', '#btn-clear-filter', (e) => {
+    $('#input-filter').val('')
+    Data.metrics.setFilter(null)
+  })
   $(document).on('click', '#btn-line-chart', (e) => {
     $('.chart-button').removeClass('is-active')
     $('#btn-line-chart').addClass('is-active')

@@ -15,6 +15,7 @@
 
 
     <body>
+
         <div class="hero is-light">
             <div class="hero-body">
                 <div class="container is-fluid">
@@ -26,13 +27,19 @@
                 </div>
             </div>
         </div>
+
         <div class="container"
             <!-- Chart Controls -->
             <nav class="level">
                 <div class="level-left">
                     <div class="level-item">
                         <p class="control has-addons">
-                            <input id="filter" class="input" type="text" placeholder="Filter metrics...">
+                            <input id="input-filter" class="input" type="text" placeholder="Filter metrics...">
+                            <a class="button" id="btn-clear-filter">
+                                <span class="icon is-small">
+                                    <i class="fa fa-close"></i>
+                                </span>
+                            </a>
                         </p>
                     </div>
                     <div class="level-item">
@@ -40,6 +47,8 @@
                     </div>
                 </div>
                 <div class="level-right">
+
+                    <!-- Chart type buttons -->
                     <div class="level-item">
                         <p class="control has-addons">
                             <a class="button chart-button is-active" id="btn-line-chart">
@@ -59,13 +68,22 @@
                             </a>
                         </p>
                     </div>
+
+                    <!-- Start/stop and refresh period -->
                     <div class="level-item">
-                        <p class="control">
+                        <p class="control has-addons">
                             <a class="button" id="btn-pause">
                                 <span class="icon is-small">
                                     <i class="fa fa-pause"></i>
                                 </span>
                             </a>
+                            <input id="input-period" class="input" type="number" min="1" value="5">
+                        </p>
+                    </div>
+
+                    <!-- Misc actions -->
+                    <div class="level-item">
+                        <p class="control">
                             <a id="btn-export" class="button">
                                 <span>Export</span>
                             </a>
@@ -73,7 +91,8 @@
                         </p>
                     </div>
                 </div>
-            </nav>
+            </nav> <!-- End Chart Controls -->
+
             <!-- Metrics List -->
             <div id="metrics">
                 <div class="columns">
@@ -83,7 +102,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> <!-- End Metrics List -->
+
         </div>
         <script src="main.js"></script>
         <style>
@@ -93,6 +113,9 @@
          }
          tr.metric-row.is-selected td {
              font-weight: bold;
+         }
+         #input-period {
+             width: 4em;
          }
         </style>
     </body>

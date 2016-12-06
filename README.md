@@ -49,7 +49,7 @@ The live charts page will be registered at `/debug/metrics/charts`.
 ## TO-DO
 
 * [ ] better handling of long list of metrics
-* [ ] set refresh period
+* [x] set refresh period
 * [ ] limit the data to a rolling window of <n> data points
 * [x] Chart options - add stacked area, display data points
 * [x] Responsive chart
