@@ -122,6 +122,7 @@ class Metrics extends Observable {
   update() {
     axios.get('/debug/metrics')
       .then((rsp) => {
+        Data.options.plotly_layout.title = rsp.data.cmdline.join(' ')
         this.metrics = rsp.data.metrics
         this.timestamp = new Date()
         for (let stat of Object.keys(rsp.data.memstats)) {
@@ -197,9 +198,12 @@ class Metrics extends Observable {
    Plotting
    ---------------------------------------------------------------------- */
 
+function _plot(data) {
+  return Plotly.newPlot('chart', data, Data.options.plotly_layout, Data.options.plotly)
+}
+
 function plot_line_chart() {
-  let data = Data.selected.plotly_data()
-  return Plotly.newPlot('chart', data, {}, Data.options.plotly)
+  return _plot(Data.selected.plotly_data())
 }
 
 function plot_area_chart() {
@@ -217,8 +221,7 @@ function plot_area_chart() {
     }
 	return traces;
   }
-  let data = stackedArea(Data.selected.plotly_data())
-  return Plotly.newPlot('chart', data, {}, Data.options.plotly)
+  return _plot(stackedArea(Data.selected.plotly_data()))
 }
 
 function plot_bar_chart() {
@@ -226,7 +229,7 @@ function plot_bar_chart() {
   for (let series of data) {
     series.type = 'bar'
   }
-  return Plotly.newPlot('chart', data, {}, Data.options.plotly)
+  return _plot(data)
 }
 
 var plot_fn = plot_line_chart
@@ -282,6 +285,8 @@ function init() {
         showLink: false,
         modeBarButtonsToRemove: ['toImage', 'sendDataToCloud'],
         displaylogo: false
+      },
+      plotly_layout: {
       }
     },
     metrics: new Metrics()
