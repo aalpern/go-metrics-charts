@@ -84,7 +84,7 @@ func staticIndexHtml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/index.html", size: 6873, mode: os.FileMode(420), modTime: time.Unix(1481054189, 0)}
+	info := bindataFileInfo{name: "static/index.html", size: 6873, mode: os.FileMode(420), modTime: time.Unix(1481056533, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -104,7 +104,7 @@ func staticMainJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "static/main.js", size: 9443, mode: os.FileMode(420), modTime: time.Unix(1481054562, 0)}
+	info := bindataFileInfo{name: "static/main.js", size: 9443, mode: os.FileMode(420), modTime: time.Unix(1481056533, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
