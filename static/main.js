@@ -192,8 +192,7 @@ class Metrics extends Observable {
 
 function plot_line_chart() {
   let data = Data.selected.plotly_data()
-  Plotly.newPlot('chart', data, {}, Data.options.plotly)
-  Data.plot = $('#chart')[0]
+  return Plotly.newPlot('chart', data, {}, Data.options.plotly)
 }
 
 function plot_area_chart() {
@@ -210,8 +209,7 @@ function plot_area_chart() {
 	return traces;
   }
   let data = stackedArea(Data.selected.plotly_data())
-  Plotly.newPlot('chart', data, {}, Data.options.plotly)
-  Data.plot = $('#chart')[0]
+  return Plotly.newPlot('chart', data, {}, Data.options.plotly)
 }
 
 function plot_bar_chart() {
@@ -219,14 +217,13 @@ function plot_bar_chart() {
   for (let series of data) {
     series.type = 'bar'
   }
-  Plotly.newPlot('chart', data, {}, Data.options.plotly)
-  Data.plot = $('#chart')[0]
+  return Plotly.newPlot('chart', data, {}, Data.options.plotly)
 }
 
 var plot_fn = plot_line_chart
 
 function plot() {
-  plot_fn()
+  return plot_fn()
 }
 
 /* ----------------------------------------------------------------------
@@ -328,6 +325,28 @@ $(document).ready(() => {
     $('#input-filter').val('')
     Data.metrics.setFilter(null)
   })
+
+  // Export a static image
+  $(document).on('click', '#btn-export', (e) => {
+    plot()
+      .then(gd =>
+            Plotly.toImage(gd, {
+              format:'png',
+              height: 600,
+              width: 1400
+            }))
+      .then((data_url) => {
+        let data = window.atob(data_url.split(',')[1])
+        let buf  = new ArrayBuffer(data.length)
+        let view = new Uint8Array(buf)
+        for ( let i = 0; i < data.length; i++ ) {
+          view[i] = data.charCodeAt(i) & 0xff
+        }
+        let blob = new Blob([view], {type:'image/png'})
+        window.saveAs(blob, 'go-metrics.png')
+      })
+  })
+
   $(document).on('click', '#btn-line-chart', (e) => {
     $('.chart-button').removeClass('is-active')
     $('#btn-line-chart').addClass('is-active')
