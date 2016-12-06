@@ -287,12 +287,13 @@ function init() {
 $(document).ready(() => {
   init()
 
-  // Toggle metrics when clicking on them in the metrics table
+  // Toggle metric selection when clicking on them in the metrics
+  // table
   $(document).on('click', 'tr.metric-row td.name', (e) => {
     Data.selected.toggle(e.target.textContent)
   })
 
-  // Set the filter on input to the text box
+  // Set the metrics list filter
   $(document).on('input', '#input-filter', (e) => {
     Data.metrics.setFilter(e.currentTarget.value)
   })
@@ -302,12 +303,12 @@ $(document).ready(() => {
     Data.metrics.set_period(e.currentTarget.value * 1000)
   })
 
-  // Button handlers
-
+  // Clear the chart and metric selection
   $(document).on('click', '#btn-clear', (e) => {
     Data.selected.clear()
   })
 
+  // Toggle data collection
   $(document).on('click', '#btn-pause', (e) => {
     let icon = $('#btn-pause i')
     if (Data.metrics.is_running()) {
@@ -321,6 +322,7 @@ $(document).ready(() => {
     }
   })
 
+  // Clear Filter
   $(document).on('click', '#btn-clear-filter', (e) => {
     $('#input-filter').val('')
     Data.metrics.setFilter(null)
@@ -347,18 +349,23 @@ $(document).ready(() => {
       })
   })
 
+  // Switch to line chart
   $(document).on('click', '#btn-line-chart', (e) => {
     $('.chart-button').removeClass('is-active')
     $('#btn-line-chart').addClass('is-active')
     plot_fn = plot_line_chart
     plot()
   })
+
+  // Switch to area chart
   $(document).on('click', '#btn-area-chart', (e) => {
     $('.chart-button').removeClass('is-active')
     $('#btn-area-chart').addClass('is-active')
     plot_fn = plot_area_chart
     plot()
   })
+
+  // Switch to bar chart
   $(document).on('click', '#btn-bar-chart', (e) => {
     $('.chart-button').removeClass('is-active')
     $('#btn-bar-chart').addClass('is-active')
