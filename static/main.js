@@ -289,8 +289,9 @@ function init() {
   Data.selected = new MetricSet(Data.metrics)
   Data.selected.on('update', plot)
   Data.selected.on('update', set_url)
-  Data.metrics.update()
   Data.metrics.start()
+  Data.metrics.update()
+  parse_url()
 }
 
 $(document).ready(() => {
@@ -343,7 +344,7 @@ $(document).ready(() => {
   })
 
   // Export a static image
-  $(document).on('click', '#btn-export', (e) => {
+  $(document).on('click', '#btn-export-png', (e) => {
     plot()
       .then(gd =>
             Plotly.toImage(gd, {
@@ -389,6 +390,4 @@ $(document).ready(() => {
 
   // Redraw the plot on window resize
   $(window).resize(plot)
-
-  parse_url()
 })

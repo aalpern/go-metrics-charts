@@ -34,7 +34,8 @@
                 <div class="level-left">
                     <div class="level-item">
                         <p class="control has-addons">
-                            <input id="input-filter" class="input" type="text" placeholder="Filter metrics...">
+                            <input id="input-filter" title="Filter by metric name, accepts regular expressions"
+                                   class="input" type="text" placeholder="Filter metrics...">
                             <a class="button" id="btn-clear-filter">
                                 <span class="icon is-small">
                                     <i class="fa fa-close"></i>
@@ -77,18 +78,22 @@
                                     <i class="fa fa-pause"></i>
                                 </span>
                             </a>
-                            <input id="input-period" class="input" type="number" min="1" value="5">
+                            <input id="input-period" title="Refresh period, in seconds"
+                                   class="input" type="number" min="1" value="5">
                         </p>
                     </div>
 
                     <!-- Misc actions -->
                     <div class="level-item">
                         <p class="control">
-                            <a id="btn-export" class="button">
-                                <span>Export</span>
+                            <a id="btn-export-png" class="button">
+                                <span class="icon is-small">
+                                    <i class="fa fa-download"></i>
+                                </span>
+                                <span>PNG</span>
                             </a>
                             <a id="btn-clear-data" class="button">Clear Data</a>
-                            <a id="btn-clear" class="button is-danger">Clear All</a>
+                            <a id="btn-clear" class="button is-danger is-outlined">Clear All</a>
                         </p>
                     </div>
                 </div>
