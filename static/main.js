@@ -68,6 +68,13 @@ class MetricSet extends Observable {
     this.fire('update')
   }
 
+  clear_data() {
+    for (let metric of this.metrics) {
+      this.data[metric] = []
+    }
+    this.fire('update')
+  }
+
   has(metric) {
     return this.metrics.has(metric)
   }
@@ -197,15 +204,17 @@ function plot_line_chart() {
 
 function plot_area_chart() {
   let stackedArea = function(traces) {
-    traces[0].fill = 'tozeroy'
-    traces.forEach(series => {series.y.reverse(); series.x.reverse() })
-	for(var i=1; i<traces.length; i++) {
-      traces[i].fill = 'tonexty'
-	  for(var j=0; j<(Math.min(traces[i]['y'].length, traces[i-1]['y'].length)); j++) {
-		traces[i]['y'][j] += traces[i-1]['y'][j];
+    if (traces && traces.length) {
+      traces[0].fill = 'tozeroy'
+      traces.forEach(series => {series.y.reverse(); series.x.reverse() })
+	  for(var i=1; i<traces.length; i++) {
+        traces[i].fill = 'tonexty'
+	    for(var j=0; j<(Math.min(traces[i]['y'].length, traces[i-1]['y'].length)); j++) {
+		  traces[i]['y'][j] += traces[i-1]['y'][j];
+	    }
 	  }
-	}
-    traces.forEach(series => {series.y.reverse(); series.x.reverse() })
+      traces.forEach(series => {series.y.reverse(); series.x.reverse() })
+    }
 	return traces;
   }
   let data = stackedArea(Data.selected.plotly_data())
@@ -301,6 +310,11 @@ $(document).ready(() => {
   // Set the refresh period
   $(document).on('input', '#input-period', (e) => {
     Data.metrics.set_period(e.currentTarget.value * 1000)
+  })
+
+  // Clear just the chart data, leaving the metric selection intact
+  $(document).on('click', '#btn-clear-data', (e) => {
+    Data.selected.clear_data()
   })
 
   // Clear the chart and metric selection
