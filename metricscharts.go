@@ -7,7 +7,7 @@ import (
 	"github.com/aalpern/go-metrics-charts/bindata"
 )
 
-func init() {
+func Register() {
 	http.HandleFunc("/debug/metrics/charts/", handleAsset("static/index.html"))
 	http.HandleFunc("/debug/metrics/charts/main.js", handleAsset("static/main.js"))
 }

@@ -1,13 +1,11 @@
 # go-metrics-charts
 
-Realtime charting of live go-metrics metrics data.
-
-This project began as a fork of
-[github.com/mkevac/debugcharts](http://github.com/mkevac/debugcharts),
-until it seemed cleaner to keep it separate. It provides real-time
-charting for applications that use the
+This project provides It real-time live charting of internal metrics
+for applications that use the
 [rcrowley/go-metrics](https://github.com/rcrowley/go-metrics) metrics
-library.
+library. It began as a fork of
+[github.com/mkevac/debugcharts](http://github.com/mkevac/debugcharts),
+until it seemed cleaner to keep it separate.
 
 This is intended as a simple live view of metrics in a single process
 without the need for an entire metrics stack - it can be useful when
@@ -27,9 +25,9 @@ tested in Safari 10 and Chrome 54.
 ## Usage
 
 ```
-package main
+import "github.com/aalpern/go-metrics-charts"
 
-import _ "github.com/aalpern/go-metrics-charts"
+metricscharts.Register()
 ```
 
 You must have metrics exposed via expvars, as rather than having a
