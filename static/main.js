@@ -101,6 +101,44 @@ class MetricSet extends Observable {
   }
 }
 
+function process_metrics_response(rsp) {
+  let metrics  = munge_metrics(rsp.data.metrics)
+  let memstats = munge_memstats(rsp.data.memstats)
+  Object.assign(metrics, memstats)
+  return metrics
+}
+
+/** Process the metrics into a flat key/value object, converting
+ * metrics that are possibly in structured form. */
+function munge_metrics(metrics) {
+  let result = {}
+  for (let name of Object.keys(metrics)) {
+    let value = metrics[name]
+    if (typeof(value) == 'number') {
+      result[name] = value
+    } else if (typeof(value) == 'object') {
+      for (let key of Object.keys(value)) {
+        result[`${name}.${key}`] = value[key]
+      }
+    }
+  }
+  return result
+}
+
+/** Process the go runtime stats into a flat key/value object,
+ * prefixing them with go.memstats. */
+function munge_memstats(memstats) {
+  let result = {}
+  for (let stat of Object.keys(memstats)) {
+    let value = memstats[stat]
+    if (typeof(value) == 'number') {
+      let name = 'go.memstats.' + stat
+      result[name] = value
+    }
+  }
+  return result
+}
+
 /**
  * Metrics encapsulates the set of all metrics and their most recent
  * values, fetched from the /debug/metrics endpoint.
@@ -120,22 +158,17 @@ class Metrics extends Observable {
   }
 
   update() {
-    axios.get('/debug/metrics')
-      .then((rsp) => {
+    return axios.get('/debug/metrics')
+      .then(rsp => {
         Data.options.plotly_layout.title = rsp.data.cmdline.join(' ')
-        this.metrics = rsp.data.metrics
-        this.timestamp = new Date()
-        for (let stat of Object.keys(rsp.data.memstats)) {
-          let value = rsp.data.memstats[stat]
-          if (typeof(value) == 'number') {
-            let name = 'go.memstats.' + stat
-            this.metrics[name] = value
-          }
-        }
-        this.names = Object.keys(this.metrics)
+        return rsp
       })
-      .then(() => {
-        this.render()
+      .then(process_metrics_response)
+      .then(metrics => {
+        this.metrics = metrics
+        this.names = Object.keys(metrics)
+        this.timestamp = new Date()
+            this.render()
         this.fire('update', this)
       })
   }
