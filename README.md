@@ -1,6 +1,6 @@
 # go-metrics-charts
 
-This project provides It real-time live charting of internal metrics
+This project provides real-time live charting of internal metrics
 for applications that use the
 [rcrowley/go-metrics](https://github.com/rcrowley/go-metrics) metrics
 library. It began as a fork of
