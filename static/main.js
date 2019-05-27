@@ -102,56 +102,16 @@ class MetricSet extends Observable {
 }
 
 function process_metrics_response(rsp) {
-  let metrics  = munge_metrics(rsp.data.metrics)
-  let memstats = munge_memstats(rsp.data.memstats)
-  let runtime  = munge_runtime(rsp.data.runtime)
-  Object.assign(metrics, memstats, runtime)
-  return metrics
-}
-
-/** Process the metrics into a flat key/value object, converting
- * metrics that are possibly in structured form. */
-function munge_metrics(metrics) {
-  let result = {}
-  for (let name of Object.keys(metrics)) {
-    let value = metrics[name]
-    if (typeof(value) == 'number') {
-      result[name] = value
-    } else if (typeof(value) == 'object') {
-      for (let key of Object.keys(value)) {
-        result[`${name}.${key}`] = value[key]
+  let metrics = {}
+  for (let key of Object.keys(rsp.data)) {
+    if (typeof(key) === 'string' || key instanceof String) {
+      let value = rsp.data[key]
+      if (typeof(value) === 'number') {
+        metrics[key] = value
       }
     }
   }
-  return result
-}
-
-/** Process the go memory stats into a flat key/value object,
- * prefixing them with go.memstats. */
-function munge_memstats(memstats) {
-  let result = {}
-  for (let stat of Object.keys(memstats || {})) {
-    let value = memstats[stat]
-    if (typeof(value) == 'number') {
-      let name = 'go.memstats.' + stat
-      result[name] = value
-    }
-  }
-  return result
-}
-
-/** Process the go runtime stats into a flat key/value object,
- * prefixing them with go.memstats. */
-function munge_runtime(runtime) {
-  let result = {}
-  for (let stat of Object.keys(runtime || {})) {
-    let value = runtime[stat]
-    if (typeof(value) == 'number') {
-      let name = 'go.runtime.' + stat
-      result[name] = value
-    }
-  }
-  return result
+  return metrics
 }
 
 /**
